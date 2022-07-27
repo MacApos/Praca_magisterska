@@ -172,3 +172,4 @@ for i in range(len(test_list)):
 
     cv2.imshow('Result', prediction)
     cv2.waitKey(0)
+print('commit')

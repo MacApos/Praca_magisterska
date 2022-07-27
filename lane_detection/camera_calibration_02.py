@@ -74,3 +74,4 @@ plt.show()
 pickle.dump(mtx, open(r'data/data_array/mtx.p', 'wb'))
 pickle.dump(dist, open('data/data_array/dist.p', 'wb'))
 
+print('commit')

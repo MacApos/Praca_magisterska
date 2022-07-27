@@ -199,3 +199,4 @@ for idx in range(2):
     logs.write(f'rmse = {rmse}\n')
     logs.write(f'r2 = {r2}\n')
     logs.close()
+print('commit')

@@ -78,3 +78,4 @@ while cap.isOpened():
         break
 
     j += 1
+print('commit')

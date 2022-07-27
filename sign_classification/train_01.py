@@ -177,5 +177,4 @@ logs.write(f'input shape = {input_shape}\n')
 logs.write(f'loss function = {loss}\n')
 logs.write(f'optimizer = {optimizer}\n')
 logs.close()
-
-
+print('commit')
