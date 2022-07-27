@@ -238,4 +238,3 @@ for idx, type in enumerate(labels_type):
     logs.write(f'loss function = {loss}\n')
     logs.write(f'optimizer = {optimizer}\n')
     logs.close()
-print('commit')

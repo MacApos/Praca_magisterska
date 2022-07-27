@@ -1,4 +1,4 @@
-"""Plik z danymi potrzebnymi do przeprowadznie detekcji linii drogowych można pobrać spod adresu:
+"""Plik z danymi potrzebnymi do przeprowadzenia detekcji linii drogowych można pobrać spod adresu:
     https://drive.google.com/drive/folders/1iafmoSfAaO981a9yl5GxGOE7pS2ZO2Wa?usp=sharing
     Wystarczy pobrać plik.
     Po pobraniu pliku Video1.mp4 kod należy egzekwować od pozycji 01.
@@ -78,4 +78,3 @@ while cap.isOpened():
         break
 
     j += 1
-print('commit')
