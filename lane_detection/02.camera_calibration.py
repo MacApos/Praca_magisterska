@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 path = 'data/camera_calibration/*.jpg'
 images = glob.glob(path)
-print(images)
 
 # Kryteria algorytmu – wymagana zmiana parametrów między iteracjami, maks. liczba iteracji
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -56,14 +55,8 @@ h, w = img.shape[:2]
 newcameramatrix, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
 
 dst = cv2.undistort(img, mtx, dist, None, mtx)
-cv2.imshow('dst', dst)
-cv2.waitKey(0)
-
 x, y, w, h = roi
 dst = dst[y:y+h, x:x+w]
-
-cv2.imshow('dst', dst)
-cv2.waitKey(0)
 
 img_list = [img, dst]
 name = ['distortion', 'no_distortion']
@@ -79,5 +72,5 @@ for X, label in zip(img_list, name):
 plt.show()
 
 # Zapis macierzy kamery i współczynników dystorsji w celu ponownego użytku
-pickle.dump(mtx, open(r'Pickles\mtx.p', 'wb'))
-pickle.dump(dist, open(r'Pickles\dist.p', 'wb'))
+pickle.dump(mtx, open(r'data/data_array/mtx.p', 'wb'))
+pickle.dump(dist, open('data/data_array/dist.p', 'wb'))
