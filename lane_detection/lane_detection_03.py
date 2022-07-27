@@ -248,14 +248,14 @@ def generate_points(image, left_curve, right_curve, start=0, stop=0, num=16, lab
 
 
 # Skalowanie wielomianów i obliczanie ich na zdjęciach ze zmienioną perspektywą
-def scale_and_perspective(image, left_curve, right_curve, perspective=False):
+def scale_and_unwarp(image, left_curve, right_curve, unwarp=False):
     points_arr = generate_points(image, left_curve, right_curve)
 
     nonzero = []
     for arr in points_arr:
         side = np.zeros((height, width))
         side = cv2.polylines(side, [arr], isClosed=False, color=1, thickness=20)
-        if perspective:
+        if unwarp:
             side = cv2.warpPerspective(side, M_inv, (width, height), flags=cv2.INTER_LINEAR)
 
         side = cv2.resize(side, (s_width, s_height))
@@ -295,7 +295,7 @@ def visualise(image, left_curve, right_curve, start=0, stop=0, show_lines=True, 
 
 
 # Wizualizacja masek
-def visualise_perspective(image, left_curve, right_curve, start=0, stop=0, line_label=False):
+def visualise_masks(image, left_curve, right_curve, start=0, stop=0, line_label=False):
     poly = np.zeros_like(image)
     width = poly.shape[1]
 
@@ -379,7 +379,7 @@ def main(path):
     image = cv2.imread(data_list[0])
     width = image.shape[1]
     height = width // 2
-    scale_factor = 1 / 2
+    scale_factor = 1 / 8
     s_width = int(width * scale_factor)
     s_height = int(height * scale_factor)
 
@@ -421,9 +421,9 @@ def main(path):
         if scale_factor == 1:
             leftx, lefty, rightx, righty = leftx0, lefty0, rightx0, righty0
         else:
-            leftx, lefty, rightx, righty = scale_and_perspective(image, left_curve0, right_curve0, perspective=False)
+            leftx, lefty, rightx, righty = scale_and_unwarp(image, left_curve0, right_curve0, unwarp=False)
 
-        t_leftx, t_lefty, t_rightx, t_righty = scale_and_perspective(image, left_curve0, right_curve0, perspective=True)
+        t_leftx, t_lefty, t_rightx, t_righty = scale_and_unwarp(image, left_curve0, right_curve0, unwarp=True)
 
         left_curve, right_curve = fit_poly(leftx, lefty, rightx, righty)
         t_left_curve, t_right_curve = fit_poly(t_leftx, t_lefty, t_rightx, t_righty)
@@ -434,8 +434,8 @@ def main(path):
         start = int(s_height * 0.6)
         stop = scale_factor * src[0][1]
         frame = cv2.resize(image, (s_width, s_height))
-        poly1, out_frame1 = visualise_perspective(frame, t_left_curve, t_right_curve, start, stop)
-        poly2, out_frame2 = visualise_perspective(frame, t_left_curve, t_right_curve, start, stop, True)
+        poly1, out_frame1 = visualise_masks(frame, t_left_curve, t_right_curve, start, stop)
+        poly2, out_frame2 = visualise_masks(frame, t_left_curve, t_right_curve, start, stop, True)
         image = cv2.resize(image, (s_width, s_height)) / 255
         warp = cv2.resize(warp, (s_width, s_height)) / 255
 
@@ -451,9 +451,9 @@ def main(path):
             points_visualization = cv2.circle(points_visualization, (int(t_curves_points[k + 3] * s_width), y_[0]), 4,
                                               (0, 255, 0), -1)
 
-        visualise_list = [visualization, points_visualization, out_frame1, out_frame2]
-        for img_vis in visualise_list:
-            im_show(img_vis)
+        # visualise_list = [visualization, points_visualization, out_frame1, out_frame2]
+        # for img_vis in visualise_list:
+        #     im_show(img_vis)
 
         save_frame1 = frames_path1 + fr'\{os.path.basename(image_path)}'
         save_frame2 = frames_path2 + fr'\{os.path.basename(image_path)}'

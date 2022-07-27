@@ -22,14 +22,10 @@ for folder in train_path, test_path:
         os.mkdir(folder)
 
 fps = 30
-interval = 30/3
-# video = {"name": "Video1.mp4",
-#          "batch0": (15 * fps, 573 * fps),
-#          "batch1": (1815 * fps, 3805 * fps)}
-
+interval = 30
 video = {"name": "Video1.mp4",
-         "batch0": (25 * fps, 30 * fps),
-         "batch1": (35 * fps, 40 * fps)}
+         "batch0": (15 * fps, 573 * fps),
+         "batch1": (1815 * fps, 3805 * fps)}
 
 values = list(video.values())[1:]
 video_path = os.path.join(videos_path, video["name"])
