@@ -1,36 +1,17 @@
 import os
 import cv2
-import pickle
 import shutil
+import zipfile
 import numpy as np
 from imutils import paths
 import PIL
 from PIL import ImageOps
 from tensorflow import keras
-from lane_detection import visualise
-# from keras.utils import img_to_array, array_to_img
+from lane_detection_03 import visualise
 from keras.preprocessing.image import img_to_array, array_to_img
 
 
-def find_file(path, ext):
-    for file in os.listdir(path):
-        if file.endswith(ext):
-            return os.path.join(path, file)
-
-
-path = r'F:\Nowy folder\10\Praca\Datasets\Video_data'
-# path = r'C:\Nowy folder\10\Praca\Datasets\Video_data'
-# path = r'F:\krzysztof\Maciej_Apostol\StopienII\Video_data'
-
-dir_path = os.path.join(path, 'output')
-test_path = os.path.join(path, 'test')
-test_list = list(paths.list_images(test_path))
-
-batch_size = 32
-img_size = (80, 160)
-input_size = cv2.imread(test_list[0]).shape[:-1]
-
-
+# Generowanie danych testowych
 class generator(keras.utils.Sequence):
     def __init__(self, batch_size, img_size, test_list):
         self.batch_size = batch_size
@@ -53,18 +34,26 @@ class generator(keras.utils.Sequence):
         return x
 
 
+def find_file(path, ext):
+    for file in os.listdir(path):
+        if file.endswith(ext):
+            return os.path.join(path, file)
 
+
+# Wybór model do testowania
+# train_3 - maski nałożone na pas ruchu,
+# train_4 - maski nałożone na linie drogowe
 def choose_labels(fname):
     validation_path = os.path.join(dir_path, fname)
     model_path = find_file(validation_path, 'h5')
     model = keras.models.load_model(model_path)
-    print(model_path)
 
     train_datagen = generator(batch_size, img_size, test_list)
     predictions = model.predict(train_datagen)
     return predictions
 
 
+# Tworzenie predykcji
 def predict(i):
     global start, stop
     mask = np.argmax(predictions[i], axis=-1)
@@ -97,20 +86,10 @@ def predict(i):
     left_curve = np.polyfit(y, leftx, 2)
     right_curve = np.polyfit(y, rightx, 2)
 
-    # points = np.zeros_like(mask)
-    # for j in zip([leftx, rightx], [y, y]):
-    #     a1, a2 = [k.reshape((-1, 1)) for k in j]
-    #     con = np.concatenate((a1, a2), axis=1)
-    #     for c in con:
-    #         points = cv2.circle(points, c, 4, 1, -1)
-    # cv2.imshow('points', points)
-    # cv2.waitKey(0)
-
-    # return left_curve, right_curve, mask, points
-
     return left_curve, right_curve, mask, stop
 
 
+# Wizualizacja predykcji
 def display_prediction(i):
     test_image = cv2.imread(test_list[i])
     zeros = np.zeros_like(mask)
@@ -121,6 +100,7 @@ def display_prediction(i):
     return prediction, out_img
 
 
+# Tworzenie komunikatu wyjściowego
 def draw_circle(curve=None, color=(255, 0, 0)):
     if isinstance(curve, np.ndarray):
         circle = curve[0] * stop ** 2 + curve[1] * stop + curve[2]
@@ -132,17 +112,25 @@ def draw_circle(curve=None, color=(255, 0, 0)):
     return circle
 
 
-# for train in ['train_3', 'train_4']:
-#     predictions = choose_labels(train)
-#     indices = [0, 10, 19, 21]
-#     filename = ['prediction', 'bad_fit', 'line_cross', 'adjacent_lane']
-#
-#     for idx, i in enumerate(indices):
-#         left_curve, right_curve, mask, stop = predict(i)
-#         prediction, out_img = display_prediction(i)
-#         cv2.imwrite(f'Pictures/validation/{train}_{filename[idx]}_{i}.jpg', prediction)
-#         cv2.imshow('out_img', out_img)
-#         cv2.waitKey(0)
+# Ładowanie danych
+path = 'data'
+dir_path = 'output'
+test_path = os.path.join(path, 'test')
+
+if os.path.exists(test_path):
+    if len(os.listdir(test_path)) == 0:
+        shutil.rmtree(test_path)
+
+if not os.path.exists(test_path):
+    with zipfile.ZipFile('data/test.zip', 'r') as zip_ref:
+        print('Rozpakowywanie pliku')
+        zip_ref.extractall('data/test')
+
+test_list = list(paths.list_images(test_path))
+
+batch_size = 32
+img_size = (80, 160)
+input_size = cv2.imread(test_list[0]).shape[:-1]
 
 predictions = choose_labels('train_3')
 mean_width = 485
@@ -150,6 +138,7 @@ m_per_px = 3.7 / 485
 image = cv2.imread(test_list[0])
 center = image.shape[1] // 2
 
+# Tworzenie komunikatu wyjściowego
 offset_text = 'Offset: 0.00 m'
 cross_text = 'Line cross'
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -163,13 +152,14 @@ offset_y = 50 + offset_height // 2
 (cross_width, cross_height), _ = cv2.getTextSize(cross_text, font, font_scale, thickness)
 radius = 10
 space = 5
-circle_x = center - (cross_width + radius*2 + space)// 2
+circle_x = center - (cross_width + radius * 2 + space) // 2
 circle_y = offset_y + int(offset_height * 1.5)
 
 cross_x = circle_x + radius + space
 cross_y = offset_y + int(offset_height * 2)
 
-j = 0
+# Wizualizacja predykcji
+print('Tworzenie predykcji')
 for i in range(len(test_list)):
     left_curve, right_curve, mask, stop = predict(i)
     prediction, out_img = display_prediction(i)
@@ -179,28 +169,18 @@ for i in range(len(test_list)):
 
     width = right_stop - left_stop
 
-    middle  = left_stop + width // 2
+    middle = left_stop + width // 2
     offset = (middle - center) * m_per_px
 
-    print(offset)
     draw_circle(middle, (0, 0, 255))
     draw_circle(center, (0, 255, 0))
 
     offset_text = 'Offset: {:.2f} m'.format(offset)
     cv2.putText(out_img, offset_text, (offset_x, offset_y), font, font_scale, color, thickness, cv2.LINE_AA)
 
-    if i == 15:
-        cv2.imwrite(f'Pictures/validation/offset_{i}.jpg', out_img)
-
     if width < mean_width / 3:
-        j += 1
-        if j == 2:
-            cv2.circle(out_img, (circle_x, circle_y), radius, (0, 0, 255), -1)
-            cv2.putText(out_img, cross_text, (cross_x, cross_y), font, font_scale, color, thickness, cv2.LINE_AA)
-            cv2.imwrite(f'Pictures/validation/line_cross_{i}.jpg', out_img)
-            break
+        cv2.circle(out_img, (circle_x, circle_y), radius, (0, 0, 255), -1)
+        cv2.putText(out_img, cross_text, (cross_x, cross_y), font, font_scale, color, thickness, cv2.LINE_AA)
 
-    # cv2.imshow(f'out_img_{i}', out_img)
-    # cv2.waitKey(0)
-
-
+    cv2.imshow('Result', prediction)
+    cv2.waitKey(0)

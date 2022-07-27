@@ -2,6 +2,7 @@ import os
 import cv2
 import pickle
 import shutil
+import zipfile
 import numpy as np
 from imutils import paths
 
@@ -367,6 +368,15 @@ def main(path):
     labels_path1 = os.path.join(path, 'labels1')
     labels_path2 = os.path.join(path, 'labels2')
 
+    if os.path.exists(data_path):
+        if len(os.listdir(data_path)) == 0:
+            shutil.rmtree(data_path)
+
+    if not os.path.exists(data_path):
+        with zipfile.ZipFile('data/train.zip', 'r') as zip_ref:
+            print('Unziping file')
+            zip_ref.extractall('data/train')
+
     x = make_input('Delete previous data?')
     for folder_path in frames_path1, frames_path2, labels_path1, labels_path2:
         if os.path.exists(folder_path) and x == 'y':
@@ -504,4 +514,5 @@ def main(path):
 
 
 path = 'data'
-main(path)
+if __name__ == "__main__":
+    main(path)

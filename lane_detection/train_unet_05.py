@@ -12,9 +12,8 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from keras import layers
 from tensorflow import keras
-from keras.models import load_model
 from keras.callbacks import CSVLogger
-from keras.preprocessing.image import ImageDataGenerator, img_to_array, array_to_img
+from keras.preprocessing.image import img_to_array, array_to_img
 
 warnings.filterwarnings("ignore", category=FutureWarning)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -130,7 +129,7 @@ input_data = np.array(data)
 
 # Parametry uczenia
 batch_size = 32
-epochs = 5
+epochs = 15
 img_size = data[0].shape[:-1]
 loss = 'sparse_categorical_crossentropy'
 
@@ -153,7 +152,7 @@ for idx, type in enumerate(labels_type):
     data, labels = shuffle(input_data, input_labels)
     x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2)
 
-    # Generowanie danych do uczenia
+    # Generowanie danych treningowych
     train_datagen = generator(batch_size, img_size, x_train, y_train)
     valid_datagen = generator(batch_size, img_size, x_test, y_test)
 
