@@ -73,3 +73,4 @@ plt.show()
 # Zapis macierzy kamery i współczynników dystorsji w celu ponownego użytku
 pickle.dump(mtx, open(r'data/data_array/mtx.p', 'wb'))
 pickle.dump(dist, open('data/data_array/dist.p', 'wb'))
+
