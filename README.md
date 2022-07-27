@@ -1,7 +1,7 @@
 # Praca magisterska
 
 Prepozytorium zawiera kod przeznaczony do detekcji linii drogowych i klasyfikacji znaków drogowych.
-Kod należy egzekwować w kolejności zgodnej z oznaczeniami na końcach nazw plików.
+Należy go egzekwować w kolejności zgodnej z oznaczeniami na końcach nazw plików.
 
 Plik z danymi potrzebnymi do przeprowadznie klasyfikacji znaków pionowych można pobrać spod adresu: 
 https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?resource=download
