@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 path = 'data/camera_calibration/*.jpg'
 images = glob.glob(path)
 
-# Kryteria algorytmu – wymagana zmiana parametrów między iteracjami, maks. liczba iteracji
+# Kryteria algorytmu takie jak: wymagana zmiana parametrów między iteracjami, maks. liczba iteracji
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 # Wymiary szachownicy – 9x6
@@ -40,13 +40,13 @@ for fname in images:
 
         # Wizualizacja punktów styku pól szachownicy
         cv2.drawChessboardCorners(img, grid, corners2, retval)
-        # cv2.imshow('camera_points', img)
-        # cv2.waitKey(500)
+        cv2.imshow('camera_points', img)
+        cv2.waitKey(500)
 
 img = cv2.imread('data/camera_calibration/calibration1.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Utworzenie macierzy kamery i współczynników dystorsji
+# Tworzenie macierzy kamery i współczynników dystorsji
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 # Nowa, optymalna macierz kamery

@@ -113,7 +113,7 @@ def draw_circle(curve=None, color=(255, 0, 0)):
 # Ładowanie danych
 path = 'data'
 output_path = 'output'
-test_path = os.path.join(path, 'test(1)')
+test_path = os.path.join(path, 'test')
 test_list = list(paths.list_images(test_path))
 
 batch_size = 32

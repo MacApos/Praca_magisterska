@@ -10,11 +10,13 @@ import cv2
 import shutil
 import numpy as np
 
+# Ładowanie danych
 path = 'data'
 videos_path = path
-train_path = os.path.join(path, 'train(1)')
-test_path = os.path.join(path, 'test(1)')
+train_path = os.path.join(path, 'train')
+test_path = os.path.join(path, 'test')
 
+# Tworzenie komunikatu początkowego
 print('Delete previous data? [y/n]')
 x = input()
 x = x.lower()
@@ -28,6 +30,7 @@ for folder in train_path, test_path:
     if not os.path.exists(folder):
         os.mkdir(folder)
 
+# Ustawienia zapisu klatek
 fps = 30
 interval = 30
 video = {"name": "Video1.mp4",
@@ -45,10 +48,11 @@ for value in values:
 
 train = int(frames * 0.8)
 test = int(frames - train)
-
 i = 0
 j = 0
 k = 0
+
+# Zapisywanie klatek
 while cap.isOpened():
     _, image = cap.read()
     cropped_img = image[260:, :, :]

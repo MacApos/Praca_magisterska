@@ -2,7 +2,6 @@
     https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?resource=download
     Pobrany plik archive.zip należy umieścić w folderze sign_classification."""
 
-
 import os
 import cv2
 import zipfile

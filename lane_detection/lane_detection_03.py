@@ -27,7 +27,7 @@ def threshold(image, T):
     return image
 
 
-# Utworzenie maski kolorów
+# Tworzenie maski kolorów
 def color_mask(img, thresh=(0, 255)):
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     binary_output = np.zeros_like(gray)
@@ -342,7 +342,7 @@ def params():
     return src, dst
 
 
-# Utworzenie komunikatu początkowego
+# Tworzenie komunikatu początkowego
 def make_input(message):
     print(message, ' [y/n]')
     x = input()
@@ -361,7 +361,7 @@ def main(path):
     global M, M_inv
     global mtx, dist
 
-    data_path = os.path.join(path, 'train(1)')
+    data_path = os.path.join(path, 'train')
     array_path = os.path.join(path, 'data_array')
     frames_path1 = os.path.join(path, 'frames1')
     frames_path2 = os.path.join(path, 'frames2')
