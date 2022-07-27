@@ -361,24 +361,29 @@ def main(path):
     global M, M_inv
     global mtx, dist
 
-    data_path = os.path.join(path, 'train')
+    data_path = os.path.join(path, 'train(1)')
     array_path = os.path.join(path, 'data_array')
     frames_path1 = os.path.join(path, 'frames1')
     frames_path2 = os.path.join(path, 'frames2')
     labels_path1 = os.path.join(path, 'labels1')
     labels_path2 = os.path.join(path, 'labels2')
 
-    if not os.path.exists(array_path):
-        os.mkdir(array_path)
-
     if os.path.exists(data_path):
         if len(os.listdir(data_path)) == 0:
             shutil.rmtree(data_path)
 
     if not os.path.exists(data_path):
-        with zipfile.ZipFile('data/train.zip', 'r') as zip_ref:
-            print('Unziping file')
-            zip_ref.extractall('data/train')
+        unzip_path = 'unzipped_data'
+        with zipfile.ZipFile('data/data.zip', 'r') as zip_ref:
+            print('Unzipping file')
+            zip_ref.extractall(unzip_path)
+
+        for file in os.listdir(unzip_path):
+            shutil.move(os.path.join(unzip_path, file), os.path.join(path, file))
+        shutil.rmtree(unzip_path)
+
+    if not os.path.exists(array_path):
+        os.mkdir(array_path)
 
     x = make_input('Delete previous data?')
     for folder_path in frames_path1, frames_path2, labels_path1, labels_path2:

@@ -1,7 +1,5 @@
 import os
 import cv2
-import shutil
-import zipfile
 import numpy as np
 from imutils import paths
 import PIL
@@ -115,17 +113,7 @@ def draw_circle(curve=None, color=(255, 0, 0)):
 # Ładowanie danych
 path = 'data'
 output_path = 'output'
-test_path = os.path.join(path, 'test')
-
-if os.path.exists(test_path):
-    if len(os.listdir(test_path)) == 0:
-        shutil.rmtree(test_path)
-
-if not os.path.exists(test_path):
-    with zipfile.ZipFile('data/test.zip', 'r') as zip_ref:
-        print('Rozpakowywanie pliku')
-        zip_ref.extractall('data/test')
-
+test_path = os.path.join(path, 'test(1)')
 test_list = list(paths.list_images(test_path))
 
 batch_size = 32

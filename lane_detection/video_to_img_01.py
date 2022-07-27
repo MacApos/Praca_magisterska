@@ -1,3 +1,10 @@
+"""Plik z danymi potrzebnymi do przeprowadznie detekcji linii drogowych można pobrać spod adresu:
+    https://drive.google.com/drive/folders/1iafmoSfAaO981a9yl5GxGOE7pS2ZO2Wa?usp=sharing
+    Wystarczy pobrać plik.
+    Po pobraniu pliku Video1.mp4 kod należy egzekwować od pozycji 01.
+    Po pobraniu pliku data.zip kod należy egzekwować od pozycji 02.
+    Niezależnie, który plik zostanie pobrany należy umieścić go w folderze lane_detection/data."""
+
 import os
 import cv2
 import shutil
@@ -5,8 +12,8 @@ import numpy as np
 
 path = 'data'
 videos_path = path
-train_path = os.path.join(path, 'train')
-test_path = os.path.join(path, 'test')
+train_path = os.path.join(path, 'train(1)')
+test_path = os.path.join(path, 'test(1)')
 
 print('Delete previous data? [y/n]')
 x = input()
