@@ -5,7 +5,8 @@ Kod należy egzekwować w kolejności zgodnej z oznaczeniami na końcach nazw pl
 
 Plik z danymi potrzebnymi do przeprowadznie klasyfikacji znaków pionowych można pobrać spod adresu: 
 https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?resource=download
-\nPobrany plik archive.zip należy umieścić w folderze sign_classification.
+
+Pobrany plik archive.zip należy umieścić w folderze sign_classification.
 
 Plik z danymi potrzebnymi do przeprowadznie detekcji linii drogowych można pobrać spod adresu:
 https://drive.google.com/drive/folders/1iafmoSfAaO981a9yl5GxGOE7pS2ZO2Wa?usp=sharing
