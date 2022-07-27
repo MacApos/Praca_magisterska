@@ -4,7 +4,6 @@ import pickle
 import warnings
 import numpy as np
 import pandas as pd
-from datetime import datetime
 import plotly.offline as po
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -16,11 +15,10 @@ import keras
 import tensorflow as tf
 from keras.models import Sequential
 from keras.callbacks import CSVLogger
-from keras.optimizers import rmsprop_v2
-from keras.preprocessing.image import ImageDataGenerator, img_to_array, array_to_img
+from keras.preprocessing.image import ImageDataGenerator
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dropout, Dense, BatchNormalization
 
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings('ignore', category=FutureWarning)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -59,7 +57,7 @@ def plot_hist(history, filename):
     fig.write_image(os.path.join(filename, 'report.png'))
 
 
-# Załadowanie danych
+# Ładowanie danych
 path = 'data'
 dir_path = os.path.join(path, 'output')
 if not os.path.exists(dir_path):
@@ -88,6 +86,7 @@ learning_rate = 0.001
 batch_size = 32
 input_shape = (height, width, 3)
 loss = 'mse'
+optimizer = 'adam'
 
 # Inicjalizacja uczenia dla zdjęć w oryginalnej postaci i z transformacją perspektywy
 for idx in range(2):
@@ -111,7 +110,7 @@ for idx in range(2):
     shuffled_data, shuffled_labels = shuffle(data, labels)
     x_train, x_test, y_train, y_test = train_test_split(shuffled_data, shuffled_labels, test_size=0.2, random_state=10)
 
-    # Generowanie danych do uczenia
+    # Generowanie danych treningowych i walidacyjnych
     train_generator = ImageDataGenerator()
     valid_generator = ImageDataGenerator()
 
@@ -164,8 +163,8 @@ for idx in range(2):
     model.summary()
 
     # Kompilacja modelu
-    model.compile(loss=loss,
-                  optimizer=rmsprop_v2.RMSprop(learning_rate=learning_rate),
+    model.compile(optimizer=optimizer,
+                  loss=loss,
                   metrics=['accuracy'])
 
     # Uczenie modelu
@@ -193,9 +192,10 @@ for idx in range(2):
 
     logs = open(logs_path, 'a')
     logs.write(f'\nepochs = {epochs}\n')
-    logs.write(f'batch_size = {batch_size}\n')
-    logs.write(f'input_shape = {input_shape}\n')
-    logs.write(f'loss = {loss}\n')
+    logs.write(f'batch size = {batch_size}\n')
+    logs.write(f'input shape = {input_shape}\n')
+    logs.write(f'loss function = {loss}\n')
+    logs.write(f'optimizer = {optimizer}\n')
     logs.write(f'rmse = {rmse}\n')
     logs.write(f'r2 = {r2}\n')
     logs.close()

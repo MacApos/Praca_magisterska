@@ -368,6 +368,9 @@ def main(path):
     labels_path1 = os.path.join(path, 'labels1')
     labels_path2 = os.path.join(path, 'labels2')
 
+    if not os.path.exists(array_path):
+        os.mkdir(array_path)
+
     if os.path.exists(data_path):
         if len(os.listdir(data_path)) == 0:
             shutil.rmtree(data_path)

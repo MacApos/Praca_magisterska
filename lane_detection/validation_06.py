@@ -44,7 +44,7 @@ def find_file(path, ext):
 # train_3 - maski nałożone na pas ruchu,
 # train_4 - maski nałożone na linie drogowe
 def choose_labels(fname):
-    validation_path = os.path.join(dir_path, fname)
+    validation_path = os.path.join(output_path, fname)
     model_path = find_file(validation_path, 'h5')
     model = keras.models.load_model(model_path)
 
@@ -114,7 +114,7 @@ def draw_circle(curve=None, color=(255, 0, 0)):
 
 # Ładowanie danych
 path = 'data'
-dir_path = 'output'
+output_path = 'output'
 test_path = os.path.join(path, 'test')
 
 if os.path.exists(test_path):

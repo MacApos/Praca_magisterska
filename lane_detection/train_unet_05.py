@@ -3,19 +3,23 @@ import cv2
 import pickle
 import warnings
 import numpy as np
+import pandas as pd
 import PIL
 from PIL import ImageOps
+import plotly.offline as po
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
+import keras
 import tensorflow as tf
 from keras import layers
-from tensorflow import keras
 from keras.callbacks import CSVLogger
 from keras.preprocessing.image import img_to_array, array_to_img
 
-warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings('ignore', category=FutureWarning)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -25,6 +29,33 @@ try:
 except:
     # Niepoprawnie zainicjowane urządzenie.
     pass
+
+np.random.seed(10)
+
+
+# Wizualizacja wyników uczenia
+def plot_hist(history, filename):
+    hist = pd.DataFrame(history.history)
+    hist['epoch'] = history.epoch
+
+    fig = make_subplots(rows=2, cols=1, subplot_titles=('Accuracy', 'Loss'))
+    fig.add_trace(go.Scatter(x=hist['epoch'], y=hist['accuracy'], name='train_accuracy',
+                             mode='markers+lines'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=hist['epoch'], y=hist['val_accuracy'], name='valid_accuracy',
+                             mode='markers+lines'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=hist['epoch'], y=hist['loss'], name='train_loss',
+                             mode='markers+lines'), row=2, col=1)
+    fig.add_trace(go.Scatter(x=hist['epoch'], y=hist['val_loss'], name='valid_loss',
+                             mode='markers+lines'), row=2, col=1)
+
+    fig.update_xaxes(title_text='Epoch', row=1, col=1)
+    fig.update_xaxes(title_text='Epoch', row=2, col=1)
+    fig.update_yaxes(title_text='Accuracy', row=1, col=1)
+    fig.update_yaxes(title_text='Loss', row=2, col=1)
+    fig.update_layout(width=1400, height=1000, title='Metrics')
+
+    po.plot(fig, filename=os.path.join(filename, 'report.html'), auto_open=False)
+    fig.write_image(os.path.join(filename, 'report.png'))
 
 
 # Utworzenie generatora danych
@@ -90,7 +121,6 @@ def create_model(img_size, num_classes):
 
     # Próbkowanie w górę
     block3 = [block2[-1] // 2 ** i for i in range(num_filters + 1)]
-    print(block2, block3)
     for filters in block3:
         x = layers.Activation('relu')(x)
         x = layers.Conv2DTranspose(filters=filters, kernel_size=3, padding='same')(x)
@@ -113,7 +143,7 @@ def create_model(img_size, num_classes):
     return model
 
 
-# Załadowanie danych
+# Ładowanie danych
 path = 'data'
 dir_path = 'output'
 if not os.path.exists(dir_path):
@@ -131,7 +161,9 @@ input_data = np.array(data)
 batch_size = 32
 epochs = 15
 img_size = data[0].shape[:-1]
+input_shape = img_size + (3,)
 loss = 'sparse_categorical_crossentropy'
+optimizer = 'rmsprop'
 
 for idx, type in enumerate(labels_type):
     output_path = os.path.join(dir_path, f'{fnames[idx]}')
@@ -152,7 +184,7 @@ for idx, type in enumerate(labels_type):
     data, labels = shuffle(input_data, input_labels)
     x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2)
 
-    # Generowanie danych treningowych
+    # Generowanie danych treningowych i walidacyjnych
     train_datagen = generator(batch_size, img_size, x_train, y_train)
     valid_datagen = generator(batch_size, img_size, x_test, y_test)
 
@@ -175,7 +207,7 @@ for idx, type in enumerate(labels_type):
         break
 
     plt.show(block=False)
-    plt.pause(2)
+    plt.pause(4)
     plt.close()
 
     keras.backend.clear_session()
@@ -185,22 +217,24 @@ for idx, type in enumerate(labels_type):
     model.summary()
 
     # Kompilacja modelu
-    model.compile(optimizer='rmsprop',
-                  loss=loss)
+    model.compile(optimizer=optimizer,
+                  loss=loss,
+                  metrics=['accuracy'])
 
     # Uczenie modelu
-    model.fit(train_datagen,
-              epochs=epochs,
-              validation_data=valid_datagen,
-              callbacks=csv_logger
-              )
+    history = model.fit(x=train_datagen,
+                        epochs=epochs,
+                        validation_data=valid_datagen,
+                        callbacks=csv_logger)
 
     # Zapisywanie wag
     model.save(model_path)
+    plot_hist(history, filename=output_path)
 
     logs = open(logs_path, 'a')
     logs.write(f'\nepochs = {epochs}\n')
-    logs.write(f'batch_size = {batch_size}\n')
-    logs.write(f'input_shape = {img_size}\n')
-    logs.write(f'loss = {loss}\n')
+    logs.write(f'batch size = {batch_size}\n')
+    logs.write(f'input shape = {input_shape}\n')
+    logs.write(f'loss function = {loss}\n')
+    logs.write(f'optimizer = {optimizer}\n')
     logs.close()
