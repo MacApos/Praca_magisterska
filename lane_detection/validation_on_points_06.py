@@ -7,12 +7,6 @@ import cv2
 import os
 
 
-def find_file(path, ext):
-    for file in os.listdir(path):
-        if file.endswith(ext):
-            return os.path.join(path, file)
-
-
 # Generowanie danych testowych
 class generator(keras.utils.Sequence):
     def __init__(self, batch_size, img_size, test_list, warp):
@@ -32,12 +26,18 @@ class generator(keras.utils.Sequence):
         for j, path in enumerate(test_batch):
             img = cv2.imread(path)
             if warp:
-                img = cv2.resize(img, (width, width//2))
-                img = cv2.warpPerspective(img, M, (width, width//2), flags=cv2.INTER_LINEAR)
+                img = cv2.resize(img, (width, width // 2))
+                img = cv2.warpPerspective(img, M, (width, width // 2), flags=cv2.INTER_LINEAR)
             img = cv2.resize(img, img_size[::-1]) / 255
             x[j] = img
 
         return x
+
+
+def find_file(path, ext):
+    for file in os.listdir(path):
+        if file.endswith(ext):
+            return os.path.join(path, file)
 
 
 # Wybór model do testowania
@@ -116,18 +116,19 @@ def predict(i, perspective_mask):
     return left_curve, right_curve, mask
 
 
+# Tworznie maski złożonej z punktów
 def make_mask(image, perspective_mask=False):
     global mask
     left_curve, right_curve, mask = predict(i, perspective_mask)
     zeros = np.zeros_like(mask)
     poly = np.dstack((zeros, mask, zeros))
+    prediction = cv2.addWeighted(image, 1, poly, 0.5, 0)
+    out_img = visualise(image, left_curve, right_curve, start, stop)
 
-    out_img = cv2.addWeighted(image, 1, poly, 0.5, 0)
-    # out_img = visualise(out_img, left_curve, right_curve, start, stop)
-
-    return out_img
+    return prediction
 
 
+# Wizualizacja predykcji
 def display_prediction(i):
     if warp:
         test_image = cv2.imread(test_list[i])
@@ -143,14 +144,10 @@ def display_prediction(i):
 
         return [out_img]
 
-    # cv2.imwrite(f'Pictures/{train}_out_img.jpg', out_img)
-    # cv2.imshow('out_img', out_img)
-    # cv2.waitKey(0)
 
-
-
+# Ładowanie danych
 path = 'data'
-output_path = os.path.join(path, 'output')
+output_path = 'output'
 test_path = os.path.join(path, 'test')
 test_list = list(paths.list_images(test_path))
 
@@ -165,37 +162,16 @@ original_image = cv2.imread(test_list[0])
 width = original_image.shape[1]
 height = original_image.shape[0]
 
-for train in ('train_1', 'train_2'):
+# Wizualizacja predykcji
+for train in ['train_2']:
     predictions = choose_perspective(train)
-    for i in range(len(test_list[:1])):
-        print(i)
+    for i in range(len(test_list[:10])):
         out = display_prediction(i)
         if len(out) > 1:
-            cv2.imwrite(f'Pictures/{train}_out_img.jpg', out[0])
-            cv2.imwrite(f'Pictures/{train}_t_out_img.jpg', out[1])
-            cv2.imshow('out_img', out[0])
+            cv2.imshow('Result', out[0])
             cv2.waitKey(0)
-            cv2.imshow('t_out_img', out[1])
+            cv2.imshow('Transformed results', out[1])
             cv2.waitKey(0)
         else:
-            cv2.imwrite(f'Pictures/{train}_t_out_img.jpg', out[0])
-            cv2.imshow('out_img', out[0])
-            cv2.waitKey(0)
-
-
-    for i in range(19, len(test_list[:20])):
-        display_prediction(i)
-        out = display_prediction(i)
-        if len(out) > 1:
-            cv2.imwrite(f'Pictures/{train}_line_cross.jpg', out[0])
-            cv2.imwrite(f'Pictures/{train}_t_line_cross.jpg', out[1])
-            cv2.imshow('out_img', out[0])
-            cv2.waitKey(0)
-            cv2.imshow('out_img', out[0])
-            cv2.waitKey(0)
-            cv2.imshow('t_out_img', out[1])
-            cv2.waitKey(0)
-        else:
-            cv2.imwrite(f'Pictures/{train}_line_cross.jpg', out[0])
-            cv2.imshow('out_img', out[0])
+            cv2.imshow('Result', out[0])
             cv2.waitKey(0)

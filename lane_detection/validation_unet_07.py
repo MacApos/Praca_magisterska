@@ -120,7 +120,7 @@ batch_size = 32
 img_size = (80, 160)
 input_size = cv2.imread(test_list[0]).shape[:-1]
 
-predictions = choose_labels('train_3')
+
 mean_width = 485
 m_per_px = 3.7 / 485
 image = cv2.imread(test_list[0])
@@ -147,6 +147,7 @@ cross_x = circle_x + radius + space
 cross_y = offset_y + int(offset_height * 2)
 
 # Wizualizacja predykcji
+predictions = choose_labels('train_4')
 print('Tworzenie predykcji')
 for i in range(len(test_list)):
     left_curve, right_curve, mask, stop = predict(i)

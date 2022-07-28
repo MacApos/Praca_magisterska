@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 
-import keras
 import tensorflow as tf
 from keras import layers
+from tensorflow import keras
 from keras.callbacks import CSVLogger
 from keras.preprocessing.image import img_to_array, array_to_img
 
@@ -58,7 +58,7 @@ def plot_hist(history, filename):
     fig.write_image(os.path.join(filename, 'report.png'))
 
 
-# Utworzenie generatora danych
+# Generator danych
 class generator(keras.utils.Sequence):
     def __init__(self, batch_size, img_size, data_list, labels_list):
         self.batch_size = batch_size
@@ -155,7 +155,7 @@ labels2 = pickle.load(open('data/data_array/160x80_img_labels2.p', 'rb'))
 labels_type = [labels1, labels2]
 fnames = ['train_3', 'train_4']
 
-input_data = np.array(data)
+data = np.array(data)
 
 # Parametry uczenia
 batch_size = 32
@@ -165,7 +165,8 @@ input_shape = img_size + (3,)
 loss = 'sparse_categorical_crossentropy'
 optimizer = 'rmsprop'
 
-for idx, type in enumerate(labels_type):
+# for idx, type in enumerate(labels_type):
+for idx in range(2):
     output_path = os.path.join(dir_path, f'{fnames[idx]}')
     if not os.path.exists(output_path):
         os.mkdir(output_path)
@@ -178,10 +179,10 @@ for idx, type in enumerate(labels_type):
 
     model_path = os.path.join(output_path, 'unet_model.h5')
 
-    input_labels = np.array(type)
+    labels = np.array(labels_type[idx])
 
     # Podział danych na zbiór treningowy i walidacyjny
-    data, labels = shuffle(input_data, input_labels)
+    data, labels = shuffle(data, labels)
     x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2)
 
     # Generowanie danych treningowych i walidacyjnych
