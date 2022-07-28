@@ -36,7 +36,7 @@ for fname in images:
         imgpoints.append(corners)
 
         # Lokacja punktów styku pól szachownicy
-        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        corners2 = cv2.cornerSubPix(gray, corners, (15, 15), (-1, -1), criteria)
 
         # Wizualizacja punktów styku pól szachownicy
         cv2.drawChessboardCorners(img, grid, corners2, retval)

@@ -163,7 +163,7 @@ width = original_image.shape[1]
 height = original_image.shape[0]
 
 # Wizualizacja predykcji
-for train in ['train_2']:
+for train in ['train_1']:
     predictions = choose_perspective(train)
     for i in range(len(test_list[:10])):
         out = display_prediction(i)
