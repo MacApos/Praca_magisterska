@@ -163,15 +163,15 @@ width = original_image.shape[1]
 height = original_image.shape[0]
 
 # Wizualizacja predykcji
-for train in ['train_1']:
-    predictions = choose_perspective(train)
-    for i in range(len(test_list[:10])):
-        out = display_prediction(i)
-        if len(out) > 1:
-            cv2.imshow('Result', out[0])
-            cv2.waitKey(0)
-            cv2.imshow('Transformed results', out[1])
-            cv2.waitKey(0)
-        else:
-            cv2.imshow('Result', out[0])
-            cv2.waitKey(0)
+predictions = choose_perspective('train_1')
+print('Tworzenie predykcji')
+for i in range(len(test_list[:10])):
+    out = display_prediction(i)
+    if len(out) > 1:
+        cv2.imshow('Result', out[0])
+        cv2.waitKey(0)
+        cv2.imshow('Transformed results', out[1])
+        cv2.waitKey(0)
+    else:
+        cv2.imshow('Result', out[0])
+        cv2.waitKey(0)

@@ -7,8 +7,9 @@ import pandas as pd
 import plotly.offline as po
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from sklearn.metrics import r2_score
+import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
+from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 
 import keras
@@ -118,6 +119,7 @@ for idx in range(2):
 
     # Wizualizacja danych wejściowych
     from lane_detection_03 import visualise
+
     coefficients = coefficients_type[idx]
     start = boundaries[idx]
     y_range = np.linspace(start, height - 1, 3).astype(int)
@@ -135,11 +137,17 @@ for idx in range(2):
             cv2.circle(image, (left_points[j][0], y_), 2, (0, 255, 0), -1)
             cv2.circle(image, (right_points[j][0], y_), 2, (0, 255, 0), -1)
 
-        cv2.imshow('Data image', image)
-        cv2.waitKey(0)
+        plt.figure(figsize=(4, 3))
+        plt.imshow(image[:, :, ::-1])
+        plt.title('Data image')
+        plt.grid(False)
+        plt.axis(False)
 
-        if i > 2:
-            break
+        plt.show(block=False)
+        plt.pause(4)
+        plt.close()
+
+        break
 
     keras.backend.clear_session()
 

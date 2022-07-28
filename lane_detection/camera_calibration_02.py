@@ -58,7 +58,7 @@ x, y, w, h = roi
 dst = dst[y:y+h, x:x+w]
 
 img_list = [img, dst]
-name = ['distortion', 'no_distortion']
+name = ['Distortion', 'No distortion']
 
 j = 0
 for X, label in zip(img_list, name):
@@ -66,7 +66,8 @@ for X, label in zip(img_list, name):
     plt.subplot(1, 2, j)
     plt.imshow(X)
     plt.title(label)
-    plt.axis('off')
+    plt.grid(False)
+    plt.axis(False)
 
 plt.show()
 

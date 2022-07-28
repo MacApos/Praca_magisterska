@@ -147,7 +147,7 @@ cross_x = circle_x + radius + space
 cross_y = offset_y + int(offset_height * 2)
 
 # Wizualizacja predykcji
-predictions = choose_labels('train_4')
+predictions = choose_labels('train_3')
 print('Tworzenie predykcji')
 for i in range(len(test_list)):
     left_curve, right_curve, mask, stop = predict(i)
@@ -171,5 +171,7 @@ for i in range(len(test_list)):
         cv2.circle(out_img, (circle_x, circle_y), radius, (0, 0, 255), -1)
         cv2.putText(out_img, cross_text, (cross_x, cross_y), font, font_scale, color, thickness, cv2.LINE_AA)
 
-    cv2.imshow('Result', prediction)
+    cv2.imshow('Prediction', prediction)
+    cv2.waitKey(0)
+    cv2.imshow('Lane detection', out_img)
     cv2.waitKey(0)

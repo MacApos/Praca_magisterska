@@ -167,17 +167,17 @@ optimizer = 'rmsprop'
 
 # for idx, type in enumerate(labels_type):
 for idx in range(2):
-    output_path = os.path.join(dir_path, f'{fnames[idx]}')
-    if not os.path.exists(output_path):
-        os.mkdir(output_path)
-
-    logs_path = os.path.join(output_path, 'logs.txt')
-    if os.path.exists(logs_path):
-        os.remove(logs_path)
-
-    csv_logger = CSVLogger(logs_path, append=True, separator='\t')
-
-    model_path = os.path.join(output_path, 'unet_model.h5')
+    # output_path = os.path.join(dir_path, f'{fnames[idx]}')
+    # if not os.path.exists(output_path):
+    #     os.mkdir(output_path)
+    #
+    # logs_path = os.path.join(output_path, 'logs.txt')
+    # if os.path.exists(logs_path):
+    #     os.remove(logs_path)
+    #
+    # csv_logger = CSVLogger(logs_path, append=True, separator='\t')
+    #
+    # model_path = os.path.join(output_path, 'unet_model.h5')
 
     input_labels = np.array(labels_type[idx])
 
@@ -200,42 +200,45 @@ for idx in range(2):
         poly[:, :, [0, 2]] = 0
         out_frame = cv2.addWeighted(image, 1, poly, 0.5, 0)
         plt.figure(figsize=(16, 8))
+        name = ['Original image', 'Pixel mask', 'Mask combined\nwith image']
         for idx, img in enumerate([image, poly, out_frame]):
             plt.subplot(1, 3, idx + 1)
+            plt.imshow(img[:, :, ::-1])
+            plt.title(name[idx])
             plt.grid(False)
             plt.axis(False)
-            imgplot = plt.imshow(img[:, :, ::-1])
+
         break
 
     plt.show(block=False)
     plt.pause(4)
     plt.close()
 
-    keras.backend.clear_session()
-
-    # Tworzenie struktury modelu
-    model = create_model(img_size, 2)
-    model.summary()
-
-    # Kompilacja modelu
-    model.compile(optimizer=optimizer,
-                  loss=loss,
-                  metrics=['accuracy'])
-
-    # Uczenie modelu
-    history = model.fit(x=train_datagen,
-                        epochs=epochs,
-                        validation_data=valid_datagen,
-                        callbacks=csv_logger)
-
-    # Zapisywanie wag
-    model.save(model_path)
-    plot_hist(history, filename=output_path)
-
-    logs = open(logs_path, 'a')
-    logs.write(f'\nepochs = {epochs}\n')
-    logs.write(f'batch size = {batch_size}\n')
-    logs.write(f'input shape = {input_shape}\n')
-    logs.write(f'loss function = {loss}\n')
-    logs.write(f'optimizer = {optimizer}\n')
-    logs.close()
+    # keras.backend.clear_session()
+    #
+    # # Tworzenie struktury modelu
+    # model = create_model(img_size, 2)
+    # model.summary()
+    #
+    # # Kompilacja modelu
+    # model.compile(optimizer=optimizer,
+    #               loss=loss,
+    #               metrics=['accuracy'])
+    #
+    # # Uczenie modelu
+    # history = model.fit(x=train_datagen,
+    #                     epochs=epochs,
+    #                     validation_data=valid_datagen,
+    #                     callbacks=csv_logger)
+    #
+    # # Zapisywanie wag
+    # model.save(model_path)
+    # plot_hist(history, filename=output_path)
+    #
+    # logs = open(logs_path, 'a')
+    # logs.write(f'\nepochs = {epochs}\n')
+    # logs.write(f'batch size = {batch_size}\n')
+    # logs.write(f'input shape = {input_shape}\n')
+    # logs.write(f'loss function = {loss}\n')
+    # logs.write(f'optimizer = {optimizer}\n')
+    # logs.close()

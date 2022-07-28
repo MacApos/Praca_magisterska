@@ -425,7 +425,7 @@ def main(path):
     np.save(M_inv_path, M_inv)
 
     i = 0
-    for image_path in data_list[:55]:
+    for image_path in data_list:
         image = cv2.imread(image_path)
         image = cv2.resize(image, (width, height))
         warp, img = prepare(image, src, dst)
