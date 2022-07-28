@@ -155,7 +155,7 @@ labels2 = pickle.load(open('data/data_array/160x80_img_labels2.p', 'rb'))
 labels_type = [labels1, labels2]
 fnames = ['train_3', 'train_4']
 
-data = np.array(data)
+input_data = np.array(data)
 
 # Parametry uczenia
 batch_size = 32
@@ -179,10 +179,10 @@ for idx in range(2):
 
     model_path = os.path.join(output_path, 'unet_model.h5')
 
-    labels = np.array(labels_type[idx])
+    input_labels = np.array(labels_type[idx])
 
     # Podział danych na zbiór treningowy i walidacyjny
-    data, labels = shuffle(data, labels)
+    data, labels = shuffle(input_data, input_labels)
     x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2)
 
     # Generowanie danych treningowych i walidacyjnych
