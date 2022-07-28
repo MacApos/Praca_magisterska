@@ -83,10 +83,10 @@ boundaries = [0, 0.6 * height]
 # Parametry uczenia
 epochs = 30
 learning_rate = 0.001
-batch_size = 32
+batch_size = 100
 input_shape = (height, width, 3)
 loss = 'mse'
-optimizer = 'adam'
+optimizer = 'rmsprop'
 
 # Inicjalizacja uczenia dla zdjęć w oryginalnej postaci i z transformacją perspektywy
 for idx in range(2):
@@ -117,30 +117,30 @@ for idx in range(2):
     train_datagen = train_generator.flow(x_train, y_train, batch_size=batch_size)
     valid_datagen = valid_generator.flow(x_test, y_test, batch_size=batch_size)
 
-    # Wizualizacja danych wejściowych
-    from lane_detection_03 import visualise
-    coefficients = coefficients_type[idx]
-    start = boundaries[idx]
-    y_range = np.linspace(start, height - 1, 3).astype(int)
-    for i, (x, y) in enumerate(train_datagen):
-        left_points = np.array(y[0][:3] * width).astype(int)
-        right_points = np.array(y[0][3:] * width).astype(int)
-
-        index = np.where(np.all(labels == y[0], axis=1))[0][0]
-
-        left_curve = coefficients[index][:3]
-        right_curve = coefficients[index][3:]
-
-        warp = visualise(x[0], left_curve, right_curve, start, show_lines=True)
-        for j, y_ in enumerate(y_range):
-            cv2.circle(warp, (left_points[j][0], y_), 2, (0, 255, 0), -1)
-            cv2.circle(warp, (right_points[j][0], y_), 2, (0, 255, 0), -1)
-
-        cv2.imshow('data', warp)
-        cv2.waitKey(500)
-
-        if i == 2:
-            break
+    # # Wizualizacja danych wejściowych
+    # from lane_detection_03 import visualise
+    # coefficients = coefficients_type[idx]
+    # start = boundaries[idx]
+    # y_range = np.linspace(start, height - 1, 3).astype(int)
+    # for i, (x, y) in enumerate(train_datagen):
+    #     left_points = np.array(y[0][:3] * width).astype(int)
+    #     right_points = np.array(y[0][3:] * width).astype(int)
+    #
+    #     index = np.where(np.all(labels == y[0], axis=1))[0][0]
+    #
+    #     left_curve = coefficients[index][:3]
+    #     right_curve = coefficients[index][3:]
+    #
+    #     warp = visualise(x[0], left_curve, right_curve, start, show_lines=True)
+    #     for j, y_ in enumerate(y_range):
+    #         cv2.circle(warp, (left_points[j][0], y_), 2, (0, 255, 0), -1)
+    #         cv2.circle(warp, (right_points[j][0], y_), 2, (0, 255, 0), -1)
+    #
+    #     cv2.imshow('data', warp)
+    #     cv2.waitKey(0)
+    #
+    #     if i == 2:
+    #         break
 
     keras.backend.clear_session()
 
@@ -181,7 +181,6 @@ for idx in range(2):
     predictions = model.predict(valid_datagen)
     squeezed_test = np.squeeze(y_test)
 
-    print(model.metrics_names, 'RMSE of loss')
     test_rmse = np.sqrt(model.evaluate(valid_datagen, verbose=0))[0]
     rmse = np.sqrt(model.evaluate(x_test, y_test, verbose=0))[0]
 
